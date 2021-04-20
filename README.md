@@ -1,2 +1,2 @@
 # remi_bot
-Discord Bot
+Discord Bot for searching anime/manga/TV Shows/Movies
