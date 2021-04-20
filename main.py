@@ -5,8 +5,8 @@ import json
 from tmdbv3api import TMDb
 from tmdbv3api import Movie
 from tmdbv3api import TV
-import neverSleep
-neverSleep.awake("https://remibot.qfu10.repl.co", False)
+from neverSleep import keep_alive
+
 
 def remove_html_tags(text):
     """Remove html tags from a string"""
@@ -242,12 +242,12 @@ def book(q, auth):
   id_ = data["items"][0]["id"]
   cover_image = data["items"][0]["volumeInfo"]["imageLinks"]["thumbnail"]
   url = "http://books.google.com/books?id=" + id_
-  categorylst = data["items"][0]["volumeInfo"]["categories"]
-  categories=""
-  for element in categorylst:
-      categories += element + " " 
+  #categorylst = data["items"][0]["volumeInfo"]["categories"]
+  #categories=""
+  #for element in categorylst:
+  #    categories += element + " " 
   content = "\n" + para + "\n\n"
-  stats = "Author: " + author + "\nPublishing Date: " + date_ + "\nCategories: " + categories
+  stats = "Author: " + author + "\nPublishing Date: " + date_
   embed = discord.Embed(
     title=title,
     url = url,
@@ -302,5 +302,5 @@ async def on_message(message):
     elif prefix == "r!book" or prefix == "r!books":
         await message.channel.send(embed = book(q, message.author))
     
-
+keep_alive()
 client.run(os.environ['TOKEN'])
