@@ -5,8 +5,8 @@ import json
 from tmdbv3api import TMDb
 from tmdbv3api import Movie
 from tmdbv3api import TV
-from keep_alive import keep_alive
-
+import neverSleep
+neverSleep.awake("https://remibot.qfu10.repl.co", False)
 
 def remove_html_tags(text):
     """Remove html tags from a string"""
@@ -221,6 +221,43 @@ def tv(q, author):
     embed.set_footer(icon_url=author.avatar_url, text=f"Requested by {author.name}")
     return embed
 
+def book(q, auth):
+  response = requests.get("https://www.googleapis.com/books/v1/volumes?q=" + q)
+  data = json.loads(response.text)
+  if data["totalItems"] == 0:
+        error = discord.Embed(
+            title="Book not found"
+        )
+        error.set_image(url = "https://media1.tenor.com/images/0c143322f7e7d772353a965720338aa4/tenor.gif?itemid=19978494")
+        return error
+  title = data["items"][0]["volumeInfo"]["title"]
+  para = data["items"][0]["volumeInfo"]["description"]
+  if len(para) > 750:
+      para = para[:750] + "..."
+  date_ = data["items"][0]["volumeInfo"]["publishedDate"]
+  authorlst = data["items"][0]["volumeInfo"]["authors"]
+  author=""
+  for element in authorlst:
+      author +=element + ", "
+  id_ = data["items"][0]["id"]
+  cover_image = data["items"][0]["volumeInfo"]["imageLinks"]["thumbnail"]
+  url = "http://books.google.com/books?id=" + id_
+  categorylst = data["items"][0]["volumeInfo"]["categories"]
+  categories=""
+  for element in categorylst:
+      categories += element + " " 
+  content = "\n" + para + "\n\n"
+  stats = "Author: " + author + "\nPublishing Date: " + date_ + "\nCategories: " + categories
+  embed = discord.Embed(
+    title=title,
+    url = url,
+    description = content
+  )
+  embed.add_field(name="Information", value = stats, inline = False)
+  embed.set_thumbnail(url=cover_image)
+  embed.set_footer(icon_url=auth.avatar_url, text=f"Requested by {auth.name}")
+  return embed    
+
 def hel(author):
     embed = discord.Embed(
         title="Help Page",
@@ -230,6 +267,7 @@ def hel(author):
     embed.add_field(name="Manga", value="r!manga <query>", inline=False)
     embed.add_field(name="TV Show", value="r!tv <query>", inline=False)
     embed.add_field(name="Movie", value="r!movie <query>", inline=False)
+    embed.add_field(name="Book", value="r!book <query>", inline=False)
     embed.set_footer(icon_url=author.avatar_url, text=f"Requested by {author.name}")
     return embed
 client = discord.Client()
@@ -248,6 +286,8 @@ async def on_message(message):
     if msg.startswith('r!help'):
         await message.channel.send(embed = hel(message.author))
     lst = msg.split()
+    if len(lst) == 0:
+      return
     prefix=lst.pop(0)
     q = ' '.join(lst)        
     
@@ -259,6 +299,8 @@ async def on_message(message):
         await message.channel.send(embed = mov(q, message.author))
     elif prefix == "r!tv":
         await message.channel.send(embed = tv(q, message.author))
+    elif prefix == "r!book" or prefix == "r!books":
+        await message.channel.send(embed = book(q, message.author))
     
-keep_alive()
+
 client.run(os.environ['TOKEN'])
