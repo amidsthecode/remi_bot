@@ -112,7 +112,7 @@ def ani(q, author,M_flag):
         error.set_image(url = "https://media1.tenor.com/images/0c143322f7e7d772353a965720338aa4/tenor.gif?itemid=19978494")
         return error
     
-    content = "\n" + para + "\n\n"
+    content = "\n" + para[:2048] + "\n\n"
     if M_flag == 0:
         stats = "Type: " + type_ + "\nStatus:" + status + "\nStudios: " + studios + "\nEpisdoes: " + episodes + "\nPremiered: " + premiered +"\nScore: " + score + "\nRating: " + rating + "\nGenres: " + genres  
 
@@ -172,7 +172,7 @@ def mov(q, author,T_flag):
       url = "https://www.themoviedb.org/movie/" + str(id_)
     else:
       url = "https://www.themoviedb.org/tv/" + str(id_)  
-    content = "\n" + para + "\n\n"
+    content = "\n" + para[:2048] + "\n\n"
     if T_flag == 0:
       stats = "Status: " + status + "\nRating: " + str(rating) + "\nRelease Date: " + str(date) + "\nGenres: " + genres
     else: 
