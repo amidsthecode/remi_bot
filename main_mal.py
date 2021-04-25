@@ -66,10 +66,10 @@ def ani(q, author, channel, M_flag):
             genres += element["name"] + ", "  
     else:
         if channel.is_nsfw () :
-            api_url = "https://api.jikan.moe/v3/search/anime?q=" + q + "&genre=12"
+            api_url = "https://api.jikan.moe/v3/search/manga?q=" + q + "&genre=12"
         
         else :
-            api_url = "https://api.jikan.moe/v3/search/anime?q=" + q + "&genre=12&genre_exclude=0"
+            api_url = "https://api.jikan.moe/v3/search/manga?q=" + q + "&genre=12&genre_exclude=0"
         response = requests.get(api_url)
         data_ = json.loads(response.text)
         if "status" in data_.keys():
