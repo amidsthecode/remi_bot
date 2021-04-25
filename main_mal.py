@@ -15,9 +15,13 @@ def remove_html_tags(text):
     return re.sub(clean, '', text)
 
 
-def ani(q, author,M_flag):
+def ani(q, author, channel, M_flag):
     if M_flag == 0:
-        api_url = "https://api.jikan.moe/v3/search/anime?q=" + q
+        if channel.is_nsfw () :
+            api_url = "https://api.jikan.moe/v3/search/anime?q=" + q + "&genre=12"
+        
+        else :
+            api_url = "https://api.jikan.moe/v3/search/anime?q=" + q + "&genre=12&genre_exclude=0"
         response = requests.get(api_url)
         data_ = json.loads(response.text)
         if "status" in data_.keys():
@@ -61,7 +65,11 @@ def ani(q, author,M_flag):
         for element in genrelst:
             genres += element["name"] + ", "  
     else:
-        api_url = "https://api.jikan.moe/v3/search/manga?q=" + q
+        if channel.is_nsfw () :
+            api_url = "https://api.jikan.moe/v3/search/anime?q=" + q + "&genre=12"
+        
+        else :
+            api_url = "https://api.jikan.moe/v3/search/anime?q=" + q + "&genre=12&genre_exclude=0"
         response = requests.get(api_url)
         data_ = json.loads(response.text)
         if "status" in data_.keys():
@@ -272,9 +280,9 @@ async def on_message(message):
     q = ' '.join(lst)        
     
     if prefix == "r!anime":
-        await message.channel.send(embed = ani(q, message.author,0))
+        await message.channel.send(embed = ani(q, message.author, message.channel, 0))
     elif prefix == "r!manga":
-        await message.channel.send(embed = ani(q, message.author,1))
+        await message.channel.send(embed = ani(q, message.author, message.channel, 1))
     elif prefix == "r!movie":
         await message.channel.send(embed = mov(q, message.author,0))
     elif prefix == "r!tv":
