@@ -2,9 +2,6 @@ import os
 import discord
 import requests
 import json
-from tmdbv3api import TMDb
-from tmdbv3api import Movie
-from tmdbv3api import TV
 from keep_alive import keep_alive
 
 
@@ -15,18 +12,15 @@ def remove_html_tags(text):
     return re.sub(clean, '', text)
 
 
-def ani(q, author, channel, M_flag):
+def ani(q, author, M_flag):
     if M_flag == 0:
-        if channel.is_nsfw () :
-            api_url = "https://api.jikan.moe/v3/search/anime?q=" + q + "&genre=12"
         
-        else :
-            api_url = "https://api.jikan.moe/v3/search/anime?q=" + q + "&genre=12&genre_exclude=0"
+        api_url = "https://api.jikan.moe/v3/search/anime?q=" + q
         response = requests.get(api_url)
         data_ = json.loads(response.text)
         if "status" in data_.keys():
           error = discord.Embed(title="Title not found")
-          error.set_image(url = "https://media1.tenor.com/images/0c143322f7e7d772353a965720338aa4/tenor.gif?itemid=19978494")
+          error.set_image(url = "https://cdn.discordapp.com/attachments/637008973714817027/834462141267705976/remicry.gif")
           return error
         id_ = str(data_["results"][0]["mal_id"])
         url_ = "https://api.jikan.moe/v3/anime/" + id_
@@ -65,16 +59,13 @@ def ani(q, author, channel, M_flag):
         for element in genrelst:
             genres += element["name"] + ", "  
     else:
-        if channel.is_nsfw () :
-            api_url = "https://api.jikan.moe/v3/search/manga?q=" + q + "&genre=12"
         
-        else :
-            api_url = "https://api.jikan.moe/v3/search/manga?q=" + q + "&genre=12&genre_exclude=0"
+        api_url = "https://api.jikan.moe/v3/search/manga?q=" + q
         response = requests.get(api_url)
         data_ = json.loads(response.text)
         if "status" in data_.keys():
           error = discord.Embed(title="Title not found")
-          error.set_image(url = "https://media1.tenor.com/images/0c143322f7e7d772353a965720338aa4/tenor.gif?itemid=19978494")
+          error.set_image(url = "https://cdn.discordapp.com/attachments/637008973714817027/834462141267705976/remicry.gif")
           return error
         id_ = str(data_["results"][0]["mal_id"])
         url_ = "https://api.jikan.moe/v3/manga/" + id_
@@ -113,13 +104,6 @@ def ani(q, author, channel, M_flag):
         genres=""
         for element in genrelst:
             genres += element["name"] + ", "  
-    if "status" in data_.keys():
-        error = discord.Embed(
-            title="Title not found"
-        )
-        error.set_image(url = "https://media1.tenor.com/images/0c143322f7e7d772353a965720338aa4/tenor.gif?itemid=19978494")
-        return error
-    
     content = "\n" + para[:2048] + "\n\n"
     if M_flag == 0:
         stats = "Type: " + type_ + "\nStatus:" + status + "\nStudios: " + studios + "\nEpisdoes: " + episodes + "\nPremiered: " + premiered +"\nScore: " + score + "\nRating: " + rating + "\nGenres: " + genres  
@@ -139,60 +123,50 @@ def ani(q, author, channel, M_flag):
     return embed       
 
 def mov(q, author,T_flag):
-    tmdb = TMDb()
-    key= os.environ['api_key']
-    tmdb.api_key = key
-    tmdb.language="en"
+    key = os.environ["api_key"]
+    
     if T_flag == 0:
-        movie = Movie()
-        search = movie.search(q)
+        url = "http://www.omdbapi.com/?t=" + q + "&type=movie&apikey=" + key
     else:
-        tv = TV()
-        search = tv.search(q)
-    if len(search) == 0:
+        url = "http://www.omdbapi.com/?t=" + q + "&type=series&apikey=" + key    
+    response = requests.get(url)
+    data = response.json()
+    if data["Response"] == "False":
         error = discord.Embed(
             title="Title not found"
         )
-        error.set_image(url = "https://media1.tenor.com/images/0c143322f7e7d772353a965720338aa4/tenor.gif?itemid=19978494")
+        error.set_image(url = "https://cdn.discordapp.com/attachments/637008973714817027/834462141267705976/remicry.gif")
         return error
-    id_ = search[0].id
-    if T_flag == 0:
-      url = "https://api.themoviedb.org/3/movie/" + str(id_) + "?api_key=" + key +"&language=en-US"
-    else:
-      url = "https://api.themoviedb.org/3/movie/" + str(id_) + "?api_key=" + key +"&language=en-US"
 
-    response = requests.get(url)
-    data = response.json()
-    title = data["title"]
-    para = data["overview"]
-    status = data["status"]
-    rating = data["vote_average"]
-    if T_flag == 0:
-        date = data["release_date"]
-    else:
-        episodes = data["number_of_episodes"]
-        seasons =  data["number_of_seasons"]
-    genres=""
-    for element in data["genres"]:
-        genres +=element["name"] + ' '
-    cover_image = "https://www.themoviedb.org/t/p/w1280" +  data["poster_path"]
-    if T_flag == 0:
-      url = "https://www.themoviedb.org/movie/" + str(id_)
-    else:
-      url = "https://www.themoviedb.org/tv/" + str(id_)  
+    title = data["Title"]
+    poster = data["Poster"]
+    year = data["Year"]
+    genres = data["Genre"]
+    director = data["Director"]
+    writer = data["Writer"]
+    actors = data["Actors"]
+    para = data["Plot"]
+    score = data["imdbRating"]
+    type_ = data["Type"]
+    id_ = data["imdbID"]
+    url_ = "https://www.imdb.com/title/" + id_
+    
+    if T_flag == 1:
+      seasons = data["totalSeasons"]
+    stats = "Type: " + type_ + "\nRating: " + str(score) + "\nYear: " + year +''' "\nSeasons: " + str(seasons) + '''"\nDirector: " + director + "\nActors: " + actors + "\nGenres: " + genres      
     content = "\n" + para[:2048] + "\n\n"
     if T_flag == 0:
-      stats = "Status: " + status + "\nRating: " + str(rating) + "\nRelease Date: " + str(date) + "\nGenres: " + genres
+      stats = "Type: " + type_ + "\nRating: " + str(score) + "\nYear: " + year + "\nDirector: " + director + "\nActors: " + actors + "\nGenres: " + genres
     else: 
-      stats = "Status: " + status + "\nRating: " + str(rating) + "\nSeasons: " + str(seasons) + "\nEpisdoes: " + str(episodes) +  "\nGenres: " + genres  
+      stats = "Type: " + type_ + "\nRating: " + str(score) + "\nYear: " + year +"\nSeasons: " + seasons + "\nWriter: " + writer + "\nActors: " + actors + "\nGenres: " + genres  
     embed = discord.Embed(
         title=title,
-        url=url,
+        url=url_,
         description = content,
         color = discord.Colour.green()
     )
     embed.add_field(name="Information", value = stats, inline = False)
-    embed.set_thumbnail(url=cover_image)
+    embed.set_thumbnail(url=poster)
     embed.set_footer(icon_url=author.avatar_url, text=f"Requested by {author.name}")
     return embed
 
@@ -203,7 +177,7 @@ def book(q, auth):
         error = discord.Embed(
             title="Book not found"
         )
-        error.set_image(url = "https://media1.tenor.com/images/0c143322f7e7d772353a965720338aa4/tenor.gif?itemid=19978494")
+        error.set_image(url = "https://cdn.discordapp.com/attachments/637008973714817027/834462141267705976/remicry.gif")
         return error
   title=""
   if "title" in  data["items"][0]["volumeInfo"].keys():      
@@ -280,9 +254,9 @@ async def on_message(message):
     q = ' '.join(lst)        
     
     if prefix == "r!anime":
-        await message.channel.send(embed = ani(q, message.author, message.channel, 0))
+        await message.channel.send(embed = ani(q, message.author, 0))
     elif prefix == "r!manga":
-        await message.channel.send(embed = ani(q, message.author, message.channel, 1))
+        await message.channel.send(embed = ani(q, message.author, 1))
     elif prefix == "r!movie":
         await message.channel.send(embed = mov(q, message.author,0))
     elif prefix == "r!tv":
