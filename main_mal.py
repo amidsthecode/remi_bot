@@ -26,30 +26,10 @@ def ani(q, author, M_flag):
         url_ = "https://api.jikan.moe/v3/anime/" + id_
         response = requests.get(url_)
         data = json.loads(response.text)
-        url = data["url"]
-        thumbnail = data["image_url"]
-        title = data["title"]
-        type_ ="Unknown"
-        if data["type"] != None:
-            type_ = data["type"]
-        episodes="Unknown"
-        if data["episodes"] != None:
-            episodes = str(data["episodes"])
-        status ="Unknown"
-        if data["status"] != None:
-            status = data["status"]
-        premiered="Unknown"
-        if data["premiered"] != None:
-            premiered = data["premiered"]
-        score="Unknown"
-        if data["score"] != None:
-            score = str(data["score"])
-        rating="Unknown"
-        if data["rating"] != None:
-            rating = data["rating"]
-        para="Unknown"
-        if data["synopsis"] != None:
-            para = data["synopsis"]
+        dic = {"url":"", "image_url":"", "title":"", "type":"Unknown", "episodes":"Unknown", "status":"Unknown", "premiered":"Unknown", "score":"Unknown", "rating":"Unknown", "synopsis":"Unknown"} 
+        for element in dic.keys():
+            if data[element] != None:
+                dic[element] = str(data[element])
         studiolst = data["studios"]
         studios = ""
         for element in studiolst:
@@ -71,31 +51,14 @@ def ani(q, author, M_flag):
         url_ = "https://api.jikan.moe/v3/manga/" + id_
         response = requests.get(url_)
         data = json.loads(response.text)
-        url = data["url"]
-        thumbnail = data["image_url"]
-        title = data["title"]
-        type_ ="Unknown"
-        if data["type"] != None:
-            type_ = data["type"]
-        chapters="Unknown"
-        if data["chapters"] != None:
-            chapters = str(data["chapters"])
-        volumes="Unknown"
-        if data["volumes"] != None:
-            volumes = str(data["volumes"])    
-        status ="Unknown"
-        if data["status"] != None:
-            status = data["status"]
+        dic = {"url":"", "image_url":"", "title":"", "type":"Unknown", "chapters":"Unknown", "status":"Unknown", "volumes":"Unknown", "score":"Unknown", "synopsis":"Unknown"} 
+        for element in dic.keys():
+            if data[element] != None:
+                dic[element] = str(data[element])
         published="Unknown"
         if data["published"] != None:
             if data["published"]["string"] != None:
                 published = data["published"]["string"]
-        score="Unknown"
-        if data["score"] != None:
-            score = str(data["score"])
-        para="Unknown"
-        if data["synopsis"] != None:
-            para = data["synopsis"]
         authlst = data["authors"]
         auth = ""
         for element in authlst:
@@ -104,21 +67,21 @@ def ani(q, author, M_flag):
         genres=""
         for element in genrelst:
             genres += element["name"] + ", "  
-    content = "\n" + para[:2048] + "\n\n"
+    content = "\n" + dic["synopsis"][:2048] + "\n\n"
     if M_flag == 0:
-        stats = "Type: " + type_ + "\nStatus:" + status + "\nStudios: " + studios + "\nEpisdoes: " + episodes + "\nPremiered: " + premiered +"\nScore: " + score + "\nRating: " + rating + "\nGenres: " + genres  
+        stats = "Type: " + dic["type"] + "\nStatus:" + dic["status"] + "\nStudios: " + studios + "\nEpisdoes: " + dic["episodes"] + "\nPremiered: " + dic["premiered"] +"\nScore: " + dic["score"] + "\nRating: " + dic["rating"] + "\nGenres: " + genres  
 
     else:
-        stats =  "\nType: " + type_ + "\nStatus: " + status + "\nAuthors: " + auth + "\nChapters: " + chapters + "\nVolumes: " + volumes + "\nPublished: " + published +"\nScore: " + score + "\nGenres: " + genres
+        stats =  "\nType: " + dic["type"] + "\nStatus: " + dic["status"] + "\nAuthors: " + auth + "\nChapters: " + dic["chapters"] + "\nVolumes: " + dic["volumes"] + "\nPublished: " + published +"\nScore: " + dic["score"] + "\nGenres: " + genres
             
     embed = discord.Embed(
-        title=title,
-        url=url,
+        title=dic["title"],
+        url=dic["url"],
         description = content,
         color = discord.Colour.red()
     )
     embed.add_field(name="Information", value = stats, inline = False)
-    embed.set_thumbnail(url=thumbnail)
+    embed.set_thumbnail(url=dic["image_url"])
     embed.set_footer(icon_url=author.avatar_url, text=f"Requested by {author.name}")
     return embed       
 
