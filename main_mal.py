@@ -2,6 +2,7 @@ import os
 import discord
 import requests
 import json
+import time
 from keep_alive import keep_alive
 
 
@@ -100,14 +101,16 @@ def mov(q, author,T_flag):
         )
         error.set_image(url = "https://cdn.discordapp.com/attachments/637008973714817027/834462141267705976/remicry.gif")
         return error
-
+    poster = "https://www.messagetech.com/wp-content/themes/ml_mti/images/no-image.jpg"
     title = data["Title"]
-    poster = data["Poster"]
+    if data["Poster"][0] == "h":
+      poster = data["Poster"]
     year = data["Year"]
     genres = data["Genre"]
     director = data["Director"]
     writer = data["Writer"]
     actors = data["Actors"]
+    
     para = data["Plot"]
     score = data["imdbRating"]
     type_ = data["Type"]
@@ -183,6 +186,55 @@ def book(q, auth):
   embed.set_footer(icon_url=auth.avatar_url, text=f"Requested by {auth.name}")
   return embed    
 
+def trace(q, author):
+    api_url = "https://api.trace.moe/search?url=" + q
+    response = requests.get(api_url)
+    data_ = json.loads(response.text)
+    if data_["error"]:
+      error = discord.Embed(
+            title="Unable to trace"
+        )
+      error.set_image(url = "https://cdn.discordapp.com/attachments/637008973714817027/834462141267705976/remicry.gif")
+      return error
+    id_ = data_["result"][0]["anilist"]
+    episode = str(data_["result"][0]["episode"])
+    temp = int(data_["result"][0]["from"])
+    stamp = time.strftime("%H:%M:%S", time.gmtime(temp))
+    content = "Episode: " + episode + "\nTimestamp: " + stamp
+    source_url = "https://anilist.co/anime/" + str(id_)
+    query = '''
+        query ($id: Int) { # Define which variables will be used in the query (id)
+        Media (id: $id, type: ANIME) { # Insert our variables into the query arguments (search)
+            title {
+              romaji
+            }
+            coverImage{
+                medium
+            }
+
+        }
+        }
+        '''
+    variables = {
+      'id': id_
+    }
+    url = 'https://graphql.anilist.co'
+    response = requests.post(url, json={'query': query, 'variables': variables})
+    data = json.loads(response.text)
+    title = data["data"]["Media"]["title"]["romaji"]
+    cover_image= data["data"]["Media"]["coverImage"]["medium"]
+    embed = discord.Embed(
+        title=title,
+        url=source_url,
+        description = content,
+        color = discord.Colour.red()
+    )
+    embed.set_thumbnail(url=cover_image)
+    embed.set_footer(icon_url=author.avatar_url, text=f"Requested by {author.name}")
+    return embed       
+
+
+
 def hel(author):
     embed = discord.Embed(
         title="Help Page",
@@ -193,6 +245,7 @@ def hel(author):
     embed.add_field(name="TV Show", value="r!tv <query>", inline=False)
     embed.add_field(name="Movie", value="r!movie <query>", inline=False)
     embed.add_field(name="Book", value="r!book <query>", inline=False)
+    embed.add_field(name="Trace", value="r!trace <image url>", inline=False)
     embed.set_footer(icon_url=author.avatar_url, text=f"Requested by {author.name}")
     return embed
 client = discord.Client()
@@ -200,6 +253,7 @@ client = discord.Client()
 @client.event
 async def on_ready():
     print('Logged in as {0.user}'.format(client))
+    await client.change_presence(activity=discord.Game(name="r!help"))
 
 
 @client.event
@@ -226,6 +280,8 @@ async def on_message(message):
         await message.channel.send(embed = mov(q, message.author,1))
     elif prefix == "r!book" or prefix == "r!books":
         await message.channel.send(embed = book(q, message.author))
+    elif prefix == "r!trace" or prefix == "r!search":
+        await message.channel.send(embed = trace(q, message.author))
     
 keep_alive()
 client.run(os.environ['TOKEN'])
