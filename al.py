@@ -360,4 +360,78 @@ def register(q, author):
           )
   return embed
 
+def leaderboard(q, author):
+  dic1 = {}
+  dic2 = {}
+  for element in db.keys():
+    dic1[element] = db[element][1]
+    dic2[element] = db[element][4]
+
+  a1=[]
+  a2=[]
+  while(dic1):
+      maximum = -1
+      maxkey=""
+      for key in dic1.keys():
+          if dic1[key] >= maximum:
+              maximum = dic1[key]
+              maxkey = key
+      a1.append(maxkey)
+      a2.append(maximum)
+      del dic1[maxkey]        
+
+  m1=[]
+  m2=[]
+  while(dic2):
+      maximum = -1
+      maxkey=""
+      for key in dic2.keys():
+          if dic2[key] >= maximum:
+              maximum = dic2[key]
+              maxkey = key
+      m1.append(maxkey)
+      m2.append(maximum)
+      del dic2[maxkey]
+
+  x = int(len(a1)/10)
+  y = int(len(m1)/10)
+  n1 = 0
+  n2 = 0
+  try: 
+    q = int(q) - 1 
+    if q > x or q > y:
+      embed = discord.Embed(
+                title="Error"
+            )
+      return embed
+    else:
+      
+      n1 = q
+      n2 = q
+  except:
+    print("yo")    
+  animelb = ""
+  for i in range(n1*10, min(10*(n1+1), len(a1))): 
+    animelb = animelb + "#" + str(i+1) + ": " + db[a1[i]][0] + " (<@" + a1[i] + ">) - " + str(a2[i]) + " days\n"
+
+  mangalb = ""
+  for i in range(n2*10, min(10*(n2+1), len(m1))): 
+    mangalb = mangalb + "#" + str(i+1) + ": " + db[m1[i]][0] + " (<@" + m1[i] + ">) - " + str(m2[i]) + " days\n"
+  
+  if str(author.id) in db.keys():            
+    arank = a1.index(str(author.id)) + 1
+    mrank = m1.index(str(author.id)) + 1
+    animelb = animelb + "**Your position: #" + str(arank) + ": " + db[str(author.id)][0] + " - " + str(db[str(author.id)][1]) + " days**\n"
+    mangalb = mangalb + "**Your position: #" + str(mrank) + ": " + db[str(author.id)][0] + " - " + str(db[str(author.id)][4]) + " days**\n"
+  
+  embed = discord.Embed(
+          title="Leaderboard",
+          description = "Page " + str(n1 + 1) + "/" + str(x + 1),
+          color = discord.Colour.red()
+      )
+  embed.add_field(name="Anime Leaderboard", value = animelb, inline = True)
+  embed.add_field(name="Manga Leaderboard", value = mangalb, inline = True)
+  embed.set_footer(icon_url=author.avatar_url, text=f"Requested by {author.name}")
+  return embed 
+
 
