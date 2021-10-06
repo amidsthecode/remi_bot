@@ -37,7 +37,6 @@ async def on_ready():
 async def on_message(message):
     if message.author == client.user:
         return
-    
     msg = message.content    
     if msg.startswith('r!help'):
         await message.channel.send(embed = hel(message.author, message.guild.id))
@@ -54,7 +53,7 @@ async def on_message(message):
       elif prefix == "r!register":
         await message.channel.send(embed = register(q, message.author))
       elif prefix == "r!profile":
-          await message.channel.send(embed = profile(message.author))
+          await message.channel.send(embed = profile(q, message.author))
       elif prefix == "r!delete":
           del db[str(message.author.id)] 
           embed = discord.Embed(
