@@ -230,9 +230,14 @@ def al(q, author, M_flag):
       return error
 
 
-def profile(auth):
+def profile(q, auth):
   #[discord_id] = [al_username, animedays, animescore, animecount, mangadays, mangascore, mangacount, profilepic_url]
-  if str(auth.id) in db.keys():
+  id_ = str(auth.id)
+  q  = q[-19:-1]
+  if q in db.keys():
+    id_ = q
+
+  if str(id_) in db.keys():
     query = '''
     query ($search: String) { 
     User(name: $search){
@@ -258,7 +263,7 @@ def profile(auth):
     }
     '''
     variables = {
-        "search": db[str(auth.id)][0]
+        "search": db[str(id_)][0]
       }
 
     url = 'https://graphql.anilist.co'
@@ -279,8 +284,8 @@ def profile(auth):
     manga_days = max(x, y)
 
     #[discord_id] = [al_username, animedays, animescore, animecount, mangadays, mangascore, mangacount, profilepic_url]
-    db[str(auth.id)] = [db[str(auth.id)][0], anime_days, anime_score, anime_count, manga_days, manga_score, manga_count, avatar_url]
-    l = db[str(auth.id)]
+    db[str(id_)] = [db[str(id_)][0], anime_days, anime_score, anime_count, manga_days, manga_score, manga_count, avatar_url]
+    l = db[str(id_)]
     embed = discord.Embed(
       title = l[0] + "'s Profile",
       url = "https://anilist.co/user/" + l[0]
@@ -393,8 +398,8 @@ def leaderboard(q, author):
       m2.append(maximum)
       del dic2[maxkey]
 
-  x = int(len(a1)/10)
-  y = int(len(m1)/10)
+  x = int((len(a1)-1)/10)
+  y = int((len(m1)-1)/10)
   n1 = 0
   n2 = 0
   try: 
@@ -409,7 +414,7 @@ def leaderboard(q, author):
       n1 = q
       n2 = q
   except:
-    print("yo")    
+    pass   
   animelb = ""
   for i in range(n1*10, min(10*(n1+1), len(a1))): 
     animelb = animelb + "#" + str(i+1) + ": " + db[a1[i]][0] + " (<@" + a1[i] + ">) - " + str(a2[i]) + " days\n"
