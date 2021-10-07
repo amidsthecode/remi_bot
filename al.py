@@ -220,7 +220,7 @@ def al(q, author, M_flag):
       embed.add_field(name="Information", value = stats, inline = False)
       embed.add_field(name=user_header, value = user_stats, inline = False)
       embed.set_thumbnail(url=coverImage)
-      embed.set_footer(icon_url=author.avatar_url, text=f"Requested by {author.name}")
+      embed.set_footer(icon_url=author.avatar.url, text=f"Requested by {author.name}")
       return embed 
     except:
       error = discord.Embed(
@@ -293,7 +293,7 @@ def profile(q, auth):
     embed.add_field(name="Anime:", value="Total Anime: " + str(l[3]) + "\nMean Score: " + str(l[2]) + "\nTotal Days: " + str(l[1]), inline=False)
     embed.add_field(name="Manga:", value="Total Manga: " + str(l[6]) + "\nMean Score: " + str(l[5]) + "\nTotal Days: " + str(l[4]), inline=False)
     embed.set_thumbnail(url=l[-1])
-    embed.set_footer(icon_url=auth.avatar_url, text=f"Requested by {auth.name}")
+    embed.set_footer(icon_url=auth.avatar.url, text=f"Requested by {auth.name}")
     return embed
   else:
     error = discord.Embed(
@@ -436,7 +436,7 @@ def leaderboard(q, author):
       )
   embed.add_field(name="Anime Leaderboard", value = animelb, inline = True)
   embed.add_field(name="Manga Leaderboard", value = mangalb, inline = True)
-  embed.set_footer(icon_url=author.avatar_url, text=f"Requested by {author.name}")
+  embed.set_footer(icon_url=author.avatar.url, text=f"Requested by {author.name}")
   return embed 
 
 
