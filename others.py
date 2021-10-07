@@ -65,7 +65,7 @@ def mov(q, author,T_flag):
     )
     embed.add_field(name="Information", value = stats, inline = False)
     embed.set_thumbnail(url=poster)
-    embed.set_footer(icon_url=author.avatar_url, text=f"Requested by {author.name}")
+    embed.set_footer(icon_url=author.avatar.url, text=f"Requested by {author.name}")
     return embed
 
 def book(q, auth):
@@ -115,7 +115,7 @@ def book(q, auth):
   )
   embed.add_field(name="Information", value = stats, inline = False)
   embed.set_thumbnail(url=cover_image)
-  embed.set_footer(icon_url=auth.avatar_url, text=f"Requested by {auth.name}")
+  embed.set_footer(icon_url=auth.avatar.url, text=f"Requested by {auth.name}")
   return embed    
 
 def trace(q, author):
@@ -162,5 +162,5 @@ def trace(q, author):
         color = discord.Colour.red()
     )
     embed.set_thumbnail(url=cover_image)
-    embed.set_footer(icon_url=author.avatar_url, text=f"Requested by {author.name}")
+    embed.set_footer(icon_url=author.avatar.url, text=f"Requested by {author.name}")
     return embed       
