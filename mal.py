@@ -98,6 +98,6 @@ def mal(q, author, M_flag):
     )
     embed.add_field(name="Information", value = stats, inline = False)
     embed.set_thumbnail(url=image_url)
-    embed.set_footer(icon_url=author.avatar_url, text=f"Requested by {author.name}")
+    embed.set_footer(icon_url=author.avatar.url, text=f"Requested by {author.name}")
     return embed       
 
