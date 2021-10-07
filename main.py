@@ -23,7 +23,7 @@ def hel(author, server_id):
       embed.add_field(name="Profile", value="r!profile\nCheck your AL stats(you need to be registered for this)", inline=False)
       embed.add_field(name="Leaderboard", value="r!leaderboard or r!lb\nCheck the leaderboard for where you stand in the server, also you can check other some page x by 'r!lb x', for example 'r!lb 2' gets the 2nd page of the leaderboard", inline=False)
       embed.add_field(name="Delete", value="r!delete\nDelete your AL account in the bot's database", inline=False)
-    embed.set_footer(icon_url=author.avatar_url, text=f"Requested by {author.name}")
+    embed.set_footer(icon_url=author.avatar.url, text=f"Requested by {author.name}")
     return embed
 client = discord.Client(allowed_mentions = AllowedMentions().none())
 
